@@ -148,42 +148,7 @@ const About = () => {
       </div>
 
       {/* Team Section */}
-      <div className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-gray-800 mb-12">
-            Meet Our Team
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex flex-col items-center">
-              <img
-                src="https://randomuser.me/api/portraits/men/1.jpg"
-                alt="Team Member"
-                className="w-32 h-32 rounded-full mb-4 shadow-lg"
-              />
-              <h3 className="text-xl font-semibold text-gray-800">John Doe</h3>
-              <p className="text-gray-600">Founder & CEO</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <img
-                src="https://randomuser.me/api/portraits/women/1.jpg"
-                alt="Team Member"
-                className="w-32 h-32 rounded-full mb-4 shadow-lg"
-              />
-              <h3 className="text-xl font-semibold text-gray-800">Jane Smith</h3>
-              <p className="text-gray-600">Head of Operations</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <img
-                src="https://randomuser.me/api/portraits/men/2.jpg"
-                alt="Team Member"
-                className="w-32 h-32 rounded-full mb-4 shadow-lg"
-              />
-              <h3 className="text-xl font-semibold text-gray-800">Mike Johnson</h3>
-              <p className="text-gray-600">Tech Lead</p>
-            </div>
-          </div>
-        </div>
-      </div>
+     
     </div>
   );
 };
