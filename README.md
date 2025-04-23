@@ -10,7 +10,7 @@ Features 🚀
 Tech Stack 🛠️
 Frontend: React.js
 State Management: Redux
-Styling: CSS/SCSS or any UI framework (e.g., TailwindCSS/Bootstrap if applicable)
+Styling: Tailwind CSS
 CORS Handling: CORS extension for development
 Installation 💻
 Follow these steps to set up the project locally:
