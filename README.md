@@ -1,5 +1,7 @@
 FoodVilla 🍴
 FoodVilla is a modern food-ordering web application built entirely with React.js. The app leverages Redux for efficient state management and uses a CORS extension to handle cross-origin requests during development.
+![image](https://github.com/user-attachments/assets/db874e1f-82b8-4ec6-84b5-c8bb6f08a967)
+
 
 Features 🚀
 🛒 Restaurant Listings: Browse a variety of restaurants and cuisines.
