@@ -8,10 +8,32 @@ const useRestaurantMenu=(resId)=>{
     },[])
 
     const fetchData=async()=>{
-        const data=await fetch(MENU_API + resId);
-        const json=await data.json();
-        console.log(json);
-        setResInfo(json.data);
+        try {
+            const response = await fetch(MENU_API + resId, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const text = await response.text();
+            
+            // Check if response is HTML (error page)
+            if (text.trim().startsWith('<!')) {
+                throw new Error('Received HTML instead of JSON');
+            }
+            
+            const json = JSON.parse(text);
+            console.log(json);
+            setResInfo(json.data);
+        } catch (error) {
+            console.error('Error fetching menu:', error);
+            // Set a fallback or empty state
+            setResInfo(null);
+        }
     }
    
 

@@ -6,7 +6,8 @@ import { Link } from "react-router-dom";
 import useOnlineStatus from "../utils/useOnlineStatus";
 import { FiSearch } from "react-icons/fi";
 import { TbAdjustmentsHorizontal } from "react-icons/tb";
-import { RESTAURANTS_API } from "../utils/constants";
+import { RESTAURANTS_API, resList } from "../utils/constants";
+import { fetchWithFallback, handleApiError } from "../utils/apiHelpers";
 
 const Body = () => {
   const [listOfRestaurants, setListOfRestaurants] = useState([]);
@@ -31,25 +32,36 @@ const Body = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(RESTAURANTS_API);
-      if (!response.ok) {
-        throw new Error('Failed to fetch restaurants');
-      }
-      const json = await response.json();
-      console.log(json); // Add this to check the response structure
+      const json = await fetchWithFallback(RESTAURANTS_API, { data: { cards: [] } });
+      console.log(json);
 
       // Update with your actual API response structure
       const restaurants = json?.data?.cards?.find(
         (card) => card?.card?.card?.gridElements?.infoWithStyle?.restaurants
       )?.card?.card?.gridElements?.infoWithStyle?.restaurants || [];
 
-      setListOfRestaurants(restaurants);
-      setFilteredRestaurants(restaurants);
+      if (restaurants.length === 0) {
+        // Use mock data as fallback
+        setListOfRestaurants(resList);
+        setFilteredRestaurants(resList);
+      } else {
+        setListOfRestaurants(restaurants);
+        setFilteredRestaurants(restaurants);
+      }
       setLoading(false);
     } catch (err) {
-      setError(err.message);
-      console.error("Error fetching restaurants:", err);
-      setLoading(false);
+      const errorMessage = handleApiError(err, () => {
+        // Fallback to mock data
+        setListOfRestaurants(resList);
+        setFilteredRestaurants(resList);
+        setLoading(false);
+      });
+      
+      // If fallback didn't work, show error
+      if (listOfRestaurants.length === 0) {
+        setError(errorMessage);
+        setLoading(false);
+      }
     }
   };
 
@@ -58,9 +70,10 @@ const Body = () => {
       setFilteredRestaurants(listOfRestaurants);
       return;
     }
-    const searchResult = listOfRestaurants.filter((res) =>
-      res.info.name.toLowerCase().includes(searchText.toLowerCase())
-    );
+    const searchResult = listOfRestaurants.filter((res) => {
+      const restaurantInfo = res.info || res.data;
+      return restaurantInfo.name.toLowerCase().includes(searchText.toLowerCase());
+    });
     setFilteredRestaurants(searchResult);
   };
 
@@ -75,16 +88,28 @@ const Body = () => {
 
     // Apply active filters
     if (newActiveFilters.rating) {
-      filteredResults = filteredResults.filter((res) => res.info.avgRating > 4);
+      filteredResults = filteredResults.filter((res) => {
+        const restaurantInfo = res.info || res.data;
+        return restaurantInfo.avgRating > 4;
+      });
     }
     if (newActiveFilters.fastDelivery) {
-      filteredResults = filteredResults.filter((res) => res.info.sla.deliveryTime < 30);
+      filteredResults = filteredResults.filter((res) => {
+        const restaurantInfo = res.info || res.data;
+        return (restaurantInfo.sla?.deliveryTime || restaurantInfo.deliveryTime) < 30;
+      });
     }
     if (newActiveFilters.pureVeg) {
-      filteredResults = filteredResults.filter((res) => res.info.veg);
+      filteredResults = filteredResults.filter((res) => {
+        const restaurantInfo = res.info || res.data;
+        return restaurantInfo.veg;
+      });
     }
     if (newActiveFilters.offers) {
-      filteredResults = filteredResults.filter((res) => res.info.aggregatedDiscountInfoV3);
+      filteredResults = filteredResults.filter((res) => {
+        const restaurantInfo = res.info || res.data;
+        return restaurantInfo.aggregatedDiscountInfoV3 || restaurantInfo.aggregatedDiscountInfoV2;
+      });
     }
 
     setFilteredRestaurants(filteredResults);
@@ -216,15 +241,18 @@ const Body = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {filteredRestaurants.map((restaurant) => (
-              <Link
-                key={restaurant?.info?.id}
-                to={`/restaurant/${restaurant?.info?.id}`}
-                className="restaurant-link"
-              >
-                <RestaurantCard resData={restaurant} />
-              </Link>
-            ))}
+            {filteredRestaurants.map((restaurant) => {
+              const restaurantInfo = restaurant?.info || restaurant?.data;
+              return (
+                <Link
+                  key={restaurantInfo?.id}
+                  to={`/restaurant/${restaurantInfo?.id}`}
+                  className="restaurant-link"
+                >
+                  <RestaurantCard resData={restaurant} />
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
