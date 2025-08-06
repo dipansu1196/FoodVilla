@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useState } from "react";
+import { MENU_API } from "./constants";
 const useRestaurantMenu=(resId)=>{
      const [resInfo,setResInfo]=useState(null);
     useEffect(()=>{
@@ -7,7 +8,7 @@ const useRestaurantMenu=(resId)=>{
     },[])
 
     const fetchData=async()=>{
-        const data=await fetch("https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=12.9351929&lng=77.62448069999999&restaurantId="+resId+"&catalog_qa=undefined&submitAction=ENTER");
+        const data=await fetch(MENU_API + resId);
         const json=await data.json();
         console.log(json);
         setResInfo(json.data);
